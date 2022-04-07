@@ -1,4 +1,4 @@
-yarn build
-cd build
+yarn dist
+cd dist
 copy index.html 200.html
-npx surge . tamnguyen02121993.surge.sh
+npx surge . tamnguyen02121993-get-link-react.surge.sh
