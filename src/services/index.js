@@ -10,7 +10,7 @@ export const fetchPage = async (category, page) => {
   return data;
 };
 
-export const generateLink = async (link) => {
-  const data = await httpClient.get(`/generate?link=${link}`);
+export const fetchDetail = async (link) => {
+  const data = await httpClient.get(`/detail?link=${link}`);
   return data;
 };

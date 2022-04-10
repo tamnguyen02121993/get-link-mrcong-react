@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   fetchCategories as getCategories,
   fetchPage as getPage,
-  generateLink,
+  fetchDetail as getDetail,
 } from "../../services";
 
 export const fetchCategories = createAsyncThunk(
@@ -29,15 +29,15 @@ export const fetchPage = createAsyncThunk(
   }
 );
 
-export const fetchLink = createAsyncThunk(
-  "mrcong/fetchLink",
+export const fetchDetail = createAsyncThunk(
+  "mrcong/fetchDetail",
   async ({ link, category, page }) => {
     try {
-      const downloadLink = await generateLink(link);
+      const data = await getDetail(link);
       return {
         category,
         page,
-        downloadLink,
+        data,
         link,
       };
     } catch (error) {
@@ -78,10 +78,10 @@ export const mrcongSlide = createSlice({
       state.pageItems.push(...action.payload);
     });
 
-    builder.addCase(fetchLink.pending, (state) => {
+    builder.addCase(fetchDetail.pending, (state) => {
       state.isLoading = true;
     });
-    builder.addCase(fetchLink.fulfilled, (state, { payload }) => {
+    builder.addCase(fetchDetail.fulfilled, (state, { payload }) => {
       state.isLoading = false;
       const item = state.pageItems.find(
         (x) =>
@@ -89,9 +89,10 @@ export const mrcongSlide = createSlice({
           x.category === payload.category &&
           x.href === payload.link
       );
-
       if (item) {
-        item.downloadLink = payload.downloadLink;
+        item.downloadLink = payload.data.downloadLink;
+        item.imageList = payload.data.imageList;
+        item.info = payload.data.info;
       }
     });
   },
@@ -106,6 +107,12 @@ export const categoriesSelector = (rootState) =>
 export const pageItemsSelector = (category, page) => (rootState) => {
   return rootState.mrcongReducer.pageItems.filter(
     (x) => x.page === page && x.category === category
+  );
+};
+
+export const itemSelector = (category, page, link) => (rootState) => {
+  return rootState.mrcongReducer.pageItems.find(
+    (x) => x.page === page && x.category === category && x.href === link
   );
 };
 
