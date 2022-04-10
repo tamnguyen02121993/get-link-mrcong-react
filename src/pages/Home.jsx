@@ -1,25 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux"
-import { Category, ListData, PageControl, Loading, ErrorConnection } from "../components";
-import { categoriesSelector, fetchCategories, pageItemsSelector, fetchPage, isLoadingSelector, errorConnectionSelector } from "../store/slices/mrcongSlice"
+import { Category, ListData, PageControl, ErrorConnection } from "../components";
+import { categoriesSelector, fetchCategories, pageItemsSelector, pageSelector, fetchPage, errorConnectionSelector, setPage, selectedCategorySelector, setSelectedCategory } from "../store/slices/mrcongSlice"
 
 function Home() {
-    const [selectedCategory, setSelectedCategory] = useState(null);
-    const [page, setPage] = useState(1);
     const dispatch = useDispatch();
     const categories = useSelector(categoriesSelector);
+    const page = useSelector(pageSelector);
+    const selectedCategory = useSelector(selectedCategorySelector);
     const data = useSelector(pageItemsSelector(selectedCategory?.name, page));
-    const isLoading = useSelector(isLoadingSelector);
     const errorConnection = useSelector(errorConnectionSelector);
 
     async function handleSelectCategory(cat) {
-        setSelectedCategory(cat);
-        setPage(1);
+        dispatch(setSelectedCategory(cat));
+        dispatch(setPage(1));
     }
 
     useEffect(() => {
         async function fetchData() {
-            await dispatch(fetchCategories())
+            if (categories.length === 0) {
+                await dispatch(fetchCategories())
+            }
         }
 
         fetchData();
@@ -42,12 +43,8 @@ function Home() {
                 errorConnection ? (<ErrorConnection />) : (
                     <>
                         <Category categories={categories} selectedCategory={selectedCategory} onSelectCategory={handleSelectCategory} />
-                        {selectedCategory && <PageControl page={page} onNextPage={() => setPage(oldPage => oldPage + 1)} onPreviousPage={() => setPage(oldPage => oldPage - 1)} />}
+                        {selectedCategory && <PageControl page={page} onNextPage={() => dispatch(setPage(page + 1))} onPreviousPage={() => dispatch(setPage(page - 1))} />}
                         <ListData data={data} />
-                        {
-                            isLoading && <Loading />
-                        }
-
                     </>
                 )
             }

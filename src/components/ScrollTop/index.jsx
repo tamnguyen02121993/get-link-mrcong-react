@@ -31,7 +31,7 @@ function ScrolTop() {
     }, [])
 
     return createPortal(
-        <div className={clsx(['fixed bottom-5 right-5 w-14 h-14 hidden bg-white text-primary border border-primary border-solid justify-center items-center rounded-full cursor-pointer lg:hover:bg-primary lg:hover:text-white lg:hover:border-white transition duration-300 lg:hover:ease-in z-50', { 'lg:flex': isShow }])} onClick={scrollTop}>
+        <div className={clsx(['shadow-md fixed bottom-5 right-5 w-14 h-14 hidden bg-white text-primary border border-primary border-solid justify-center items-center rounded-full cursor-pointer xl:hover:bg-primary xl:hover:text-white xl:hover:border-white transition duration-300 xl:hover:ease-in z-50', { 'xl:flex': isShow }])} onClick={scrollTop}>
             <ChevronUp size={48} />
         </div>,
         document.querySelector("body")

@@ -51,6 +51,8 @@ const initialState = {
   categories: [],
   pageItems: [], // Contain all data
   errorConnection: false,
+  page: 1,
+  selectedCategory: null,
 };
 
 export const mrcongSlide = createSlice({
@@ -59,6 +61,12 @@ export const mrcongSlide = createSlice({
   reducers: {
     setErrorConnection(state, action) {
       state.errorConnection = action.payload;
+    },
+    setPage(state, action) {
+      state.page = action.payload;
+    },
+    setSelectedCategory(state, action) {
+      state.selectedCategory = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -99,7 +107,8 @@ export const mrcongSlide = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setErrorConnection } = mrcongSlide.actions;
+export const { setErrorConnection, setPage, setSelectedCategory } =
+  mrcongSlide.actions;
 
 export const categoriesSelector = (rootState) =>
   rootState.mrcongReducer.categories;
@@ -121,5 +130,9 @@ export const isLoadingSelector = (rootState) =>
 
 export const errorConnectionSelector = (rootState) =>
   rootState.mrcongReducer.errorConnection;
+
+export const pageSelector = (rootState) => rootState.mrcongReducer.page;
+export const selectedCategorySelector = (rootState) =>
+  rootState.mrcongReducer.selectedCategory;
 
 export default mrcongSlide.reducer;
