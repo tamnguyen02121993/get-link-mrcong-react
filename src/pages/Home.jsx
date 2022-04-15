@@ -8,7 +8,7 @@ function Home() {
     const categories = useSelector(categoriesSelector);
     const page = useSelector(pageSelector);
     const selectedCategory = useSelector(selectedCategorySelector);
-    const data = useSelector(pageItemsSelector(selectedCategory?.name, page));
+    const data = useSelector(pageItemsSelector(selectedCategory?.category, page));
     const errorConnection = useSelector(errorConnectionSelector);
 
     async function handleSelectCategory(cat) {
@@ -30,7 +30,7 @@ function Home() {
         async function fetchPageData() {
             if (selectedCategory && data.length === 0) {
                 dispatch(fetchPage({
-                    name: selectedCategory.name,
+                    name: selectedCategory.category,
                     page
                 }))
             }
