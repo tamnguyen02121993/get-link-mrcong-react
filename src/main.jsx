@@ -5,7 +5,7 @@ import App from './App'
 import { store } from './store'
 import { Provider } from "react-redux"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
-import { Home, Detail } from './pages'
+import { Home, ArticleDetail, ArticleList } from './pages'
 
 
 ReactDOM.render(
@@ -15,7 +15,10 @@ ReactDOM.render(
         <Routes>
           <Route path="/" element={<App />}>
             <Route index element={<Home />}></Route>
-            <Route path='detail/:category/:page' element={<Detail />}></Route>
+            <Route path=':category/:page' element={<Home />}>
+              <Route index element={<ArticleList />}></Route>
+              <Route path='detail' element={<ArticleDetail />}></Route>
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>

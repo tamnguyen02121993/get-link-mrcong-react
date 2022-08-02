@@ -10,7 +10,7 @@ function ListDataItem({ item }) {
         setIsOpen(true)
     }
     async function handleViewDetail() {
-        navigate(`/detail/${item.category}/${item.page}?link=${item.href}`);
+        navigate(`/${item.category}/${item.page}/detail?link=${item.href}`)
     }
 
 

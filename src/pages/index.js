@@ -1,4 +1,5 @@
 import Home from "./Home";
-import Detail from "./Detail";
+import ArticleDetail from "./ArticleDetail";
+import ArticleList from "./ArticleList";
 
-export { Home, Detail };
+export { Home, ArticleDetail, ArticleList };

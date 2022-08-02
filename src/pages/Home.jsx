@@ -1,55 +1,103 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from "react-redux"
-import { Category, ListData, PageControl, ErrorConnection } from "../components";
-import { categoriesSelector, fetchCategories, pageItemsSelector, pageSelector, fetchPage, errorConnectionSelector, setPage, selectedCategorySelector, setSelectedCategory } from "../store/slices/mrcongSlice"
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
+import { Category, PageControl, ErrorConnection } from "../components";
+import {
+  categoriesSelector,
+  fetchCategories,
+  pageItemsSelector,
+  pageSelector,
+  fetchPage,
+  errorConnectionSelector,
+  setPage,
+  selectedCategorySelector,
+  setSelectedCategory,
+} from "../store/slices/mrcongSlice";
 
 function Home() {
-    const dispatch = useDispatch();
-    const categories = useSelector(categoriesSelector);
-    const page = useSelector(pageSelector);
-    const selectedCategory = useSelector(selectedCategorySelector);
-    const data = useSelector(pageItemsSelector(selectedCategory?.category, page));
-    const errorConnection = useSelector(errorConnectionSelector);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { category, page: pageParam } = useParams();
+  const categories = useSelector(categoriesSelector);
+  const page = useSelector(pageSelector);
+  const selectedCategory = useSelector(selectedCategorySelector);
+  const data = useSelector(pageItemsSelector(selectedCategory?.category, page));
+  const errorConnection = useSelector(errorConnectionSelector);
 
-    async function handleSelectCategory(cat) {
-        dispatch(setSelectedCategory(cat));
-        dispatch(setPage(1));
+  function handleSelectCategory(cat) {
+    debugger;
+    dispatch(setSelectedCategory(cat));
+    dispatch(setPage(1));
+    navigate(`/${cat.category}/${1}`);
+  }
+
+  function onNextPage() {
+    dispatch(setPage(page + 1));
+    navigate(`/${selectedCategory?.category}/${page + 1}`);
+  }
+
+  function onPreviousPage() {
+    dispatch(setPage(page - 1));
+    navigate(`/${selectedCategory?.category}/${page - 1}`);
+  }
+
+  useEffect(() => {
+    function fetchData() {
+      if (categories.length === 0) {
+        dispatch(fetchCategories());
+      }
     }
 
-    useEffect(() => {
-        async function fetchData() {
-            if (categories.length === 0) {
-                await dispatch(fetchCategories())
-            }
-        }
+    fetchData();
+  }, []);
 
-        fetchData();
-    }, []);
+  useEffect(() => {
+    if (categories.length !== 0) {
+      const findedCategory = categories.find((x) => x.category === category);
+      if (findedCategory) {
+        dispatch(setSelectedCategory(findedCategory));
+        dispatch(setPage(Number.isNaN(Number(pageParam)) ? 1 : Number(pageParam)));
+      }
+    }
+  }, [categories]);
 
-    useEffect(() => {
-        async function fetchPageData() {
-            if (selectedCategory && data.length === 0) {
-                dispatch(fetchPage({
-                    name: selectedCategory.category,
-                    page
-                }))
-            }
-        }
-        fetchPageData();
-    }, [selectedCategory, page])
-    return (
+  useEffect(() => {
+    async function fetchPageData() {
+      if (selectedCategory && data.length === 0) {
+        dispatch(
+          fetchPage({
+            name: selectedCategory.category,
+            page,
+          })
+        );
+      }
+    }
+    fetchPageData();
+  }, [selectedCategory, page]);
+
+  return (
+    <>
+      {errorConnection ? (
+        <ErrorConnection />
+      ) : (
         <>
-            {
-                errorConnection ? (<ErrorConnection />) : (
-                    <>
-                        <Category categories={categories} selectedCategory={selectedCategory} onSelectCategory={handleSelectCategory} />
-                        {selectedCategory && <PageControl page={page} onNextPage={() => dispatch(setPage(page + 1))} onPreviousPage={() => dispatch(setPage(page - 1))} />}
-                        <ListData data={data} />
-                    </>
-                )
-            }
+          <Category
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onSelectCategory={handleSelectCategory}
+          />
+          {selectedCategory && (
+            <PageControl
+              page={page}
+              onNextPage={onNextPage}
+              onPreviousPage={onPreviousPage}
+            />
+          )}
+          <Outlet />
         </>
-    );
+      )}
+    </>
+  );
 }
 
 export default Home;
